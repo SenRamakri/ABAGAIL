@@ -27,10 +27,12 @@ public class DiscreteUniformDistribution extends AbstractDistribution {
     public DiscreteUniformDistribution(int[] n) {
         this.n = n;
         p = n[0];
+		//System.out.println("\np="+ p);
         for (int i = 1; i < n.length; i++) {
             p *= n[i];
         }
         p = 1 / p;
+		//System.out.println("\nnew p="+ p);
     }
 
     /**
@@ -48,6 +50,8 @@ public class DiscreteUniformDistribution extends AbstractDistribution {
         for (int i = 0; i < d.length; i++) {
             d[i] = random.nextInt(n[i]);
         }
+		//for (int i = 0; i < d.length; i++)
+		//	System.out.print(" d=" + d[i]);
         return new Instance(d);
     }
 

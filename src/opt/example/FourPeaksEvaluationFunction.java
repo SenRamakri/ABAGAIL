@@ -27,7 +27,7 @@ public class FourPeaksEvaluationFunction implements EvaluationFunction {
      * @see opt.EvaluationFunction#value(opt.OptimizationData)
      */
     public double value(Instance d) {
-        Vector data = d.getData();
+		Vector data = d.getData();
         int i = 0;
         while (i < data.size() && data.get(i) == 1) {
             i++;
@@ -39,8 +39,10 @@ public class FourPeaksEvaluationFunction implements EvaluationFunction {
         }
         int tail = data.size() - 1 - i;
         int r = 0;
+		System.out.print("\nEval:" + head + ":" + tail + "\n");
         if (head > t && tail > t) {
             r = data.size();
+			System.out.print(" r=" + r);
         }
         return Math.max(tail, head) + r;
     }
