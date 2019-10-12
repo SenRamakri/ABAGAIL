@@ -22,7 +22,7 @@ import java.text.*;
 public class AbaloneTest {
     private static Instance[] instances = initializeInstances();
 
-    private static int inputLayer = 14, hiddenLayer = 2, outputLayer = 1, trainingIterations = 1000;
+    private static int inputLayer = 14, hiddenLayer = 2, outputLayer = 1, trainingIterations = 500;
     private static BackPropagationNetworkFactory factory = new BackPropagationNetworkFactory();
     
     private static ErrorMeasure measure = new SumOfSquaresError();
@@ -42,7 +42,7 @@ public class AbaloneTest {
         for(int i = 0; i < oa.length; i++) {
             RELU relu = new RELU();
             networks[i] = factory.createClassificationNetwork(
-                new int[] {inputLayer, hiddenLayer, outputLayer});
+                new int[] {inputLayer, hiddenLayer, outputLayer}, relu);
             nnop[i] = new NeuralNetworkOptimizationProblem(set, networks[i], measure);
         }
 
