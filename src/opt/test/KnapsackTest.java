@@ -84,7 +84,7 @@ public class KnapsackTest {
         String csvTime = "";
         String csvFitness = "";
         long starttime, sumOpt, sumTime;
-        int loopCount = 3, i=0, j=0;
+        int loopCount = 1, i=0, j=0;
         int[] iterations = {100, 500, 1000, 2000, 5000, 10000, 50000};
         csvTime += "AlgoTime";
         csvFitness += "AlgoOptimal";

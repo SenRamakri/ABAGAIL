@@ -54,8 +54,9 @@ public class FourPeaksTest {
         String csvTime = "";
         String csvFitness = "";
         long starttime, sumOpt, sumTime;
-        int loopCount = 3, i=0, j=0;
-        int[] iterations = {100, 500, 1000, 2000, 5000, 10000, 50000};
+        int loopCount = 1, i=0, j=0;
+        //int[] iterations = {100, 500, 1000, 2000, 5000, 10000, 50000};
+        int[] iterations = {100, 500, 1000};
         csvTime += "AlgoTime";
         csvFitness += "AlgoOptimal";
         for(i=0; i<iterations.length;i++) {
