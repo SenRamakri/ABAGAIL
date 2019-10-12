@@ -210,7 +210,7 @@ public class NNRHC {
         for(int i = 0; i < instances.length; i++) {
             instances[i] = new Instance(attributes[i][0]);
             // already classified as 1,0, just assign it
-            System.out.println("\tEntry : " + i + " label :" + attributes[i][1][0]);
+            //System.out.println("\tEntry : " + i + " label :" + attributes[i][1][0]);
             instances[i].setLabel(new Instance(attributes[i][1][0]));
         }
 
