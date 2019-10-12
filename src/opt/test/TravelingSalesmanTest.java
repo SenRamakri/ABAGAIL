@@ -86,9 +86,9 @@ public class TravelingSalesmanTest {
                 sumOpt += ef.value(rhc.getOptimal());
                 sumTime += System.currentTimeMillis() - starttime;
             }
-            System.out.println("RHC Optimal : " + sumOpt / loopCount);
+            System.out.println("RHC Optimal : " + (float)sumOpt / loopCount);
             System.out.println("Time : " + sumTime / loopCount);
-            csvFitness += ("," + (sumOpt / loopCount));
+            csvFitness += ("," + ((float)sumOpt / loopCount));
             csvTime += ("," + (sumTime / loopCount)); 
         }
         csvFitness += "\n";
@@ -108,9 +108,9 @@ public class TravelingSalesmanTest {
                 sumOpt += ef.value(sa.getOptimal());
                 sumTime += System.currentTimeMillis() - starttime;
             }
-            System.out.println("SA Optimal : " + sumOpt / loopCount);
+            System.out.println("SA Optimal : " + (float)sumOpt / loopCount);
             System.out.println("Time : " + sumTime / loopCount);
-            csvFitness += ("," + (sumOpt / loopCount));
+            csvFitness += ("," + ((float)sumOpt / loopCount));
             csvTime += ("," + (sumTime / loopCount)); 
         }
         csvFitness += "\n";
@@ -130,9 +130,9 @@ public class TravelingSalesmanTest {
                 sumOpt += ef.value(ga.getOptimal());
                 sumTime += System.currentTimeMillis() - starttime;
             }
-            System.out.println("GA Optimal : " + sumOpt / loopCount);
+            System.out.println("GA Optimal : " + (float)sumOpt / loopCount);
             System.out.println("Time : " + sumTime / loopCount);
-            csvFitness += ("," + (sumOpt / loopCount));
+            csvFitness += ("," + ((float)sumOpt / loopCount));
             csvTime += ("," + (sumTime / loopCount)); 
         }
         csvFitness += "\n";
@@ -160,9 +160,9 @@ public class TravelingSalesmanTest {
                 sumOpt += ef.value(mimic.getOptimal());
                 sumTime += System.currentTimeMillis() - starttime;
             }
-            System.out.println("MIMIC Optimal : " + sumOpt / loopCount);
+            System.out.println("MIMIC Optimal : " + (float)sumOpt / loopCount);
             System.out.println("Time : " + sumTime / loopCount);
-            csvFitness += ("," + (sumOpt / loopCount));
+            csvFitness += ("," + ((float)sumOpt / loopCount));
             csvTime += ("," + (sumTime / loopCount)); 
         }
         csvFitness += "\n";
