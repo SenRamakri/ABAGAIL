@@ -83,7 +83,7 @@ public class NNSA {
         //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
         //oa[2] = new SimulatedAnnealing(1E11, .95, nnop[2]);
 
-        int[] iterations = {10, 100, 500, 1000, 2500, 5000};
+        int[] iterations = {10, 100, 200, 500, 1000};
 
         double[] coolings = {0.15,0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95};
 

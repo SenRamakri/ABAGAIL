@@ -86,11 +86,11 @@ public class NNGA {
         //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
         //oa[2] = new SimulatedAnnealing(1E11, .95, nnop[2]);
 
-        int[] iterations = {10, 100, 500, 1000, 2500,5000};
+        int[] iterations = {10, 100, 200, 500, 1000};
 
-        int[] population = {10,20,50,100,200,500};
-        int[] mate = {5,10,25,50,100,350};
-        int[] mute = {2,5,10,10,20,50};
+        int[] population = {10, 50, 100, 200, 500};
+        int[] mate = {5, 10, 25, 50, 100};
+        int[] mute = {2, 5, 10, 20, 50};
 
         for (int trainingIterations : iterations) {
             results = "";
@@ -223,7 +223,7 @@ public class NNGA {
         for(int i = 0; i < instances.length; i++) {
             instances[i] = new Instance(attributes[i][0]);
             // already classified as 1,0, just assign it
-            System.out.println("\tEntry : " + i + " label :" + attributes[i][1][0]);
+            //System.out.println("\tEntry : " + i + " label :" + attributes[i][1][0]);
             instances[i].setLabel(new Instance(attributes[i][1][0]));
         }
 
