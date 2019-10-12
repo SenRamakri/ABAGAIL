@@ -29,6 +29,7 @@ import shared.FixedIterationTrainer;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.File;
 
 /**
  * A test of the knapsack problem
@@ -188,7 +189,9 @@ public class KnapsackTest {
         System.out.println(csvTime);
 
         try {
-            BufferedWriter csvFitnessFile = new BufferedWriter(new FileWriter("knapsack_opt.csv", true));
+            File file = new File("knapsack_opt.csv");
+            file.createNewFile();
+            BufferedWriter csvFitnessFile = new BufferedWriter(new FileWriter(file));
             csvFitnessFile.write(csvFitness);
             csvFitnessFile.close();
         } catch (IOException ioe) {
@@ -196,7 +199,9 @@ public class KnapsackTest {
 	    }
         
         try {
-            BufferedWriter csvTimeFile = new BufferedWriter(new FileWriter("knapsack_time.csv", true));
+            File file = new File("knapsack_time.csv");
+            file.createNewFile();
+            BufferedWriter csvTimeFile = new BufferedWriter(new FileWriter(file));
             csvTimeFile.write(csvTime);
             csvTimeFile.close();
         } catch (IOException ioe) {

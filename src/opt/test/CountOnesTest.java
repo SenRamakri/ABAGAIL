@@ -27,6 +27,7 @@ import opt.prob.ProbabilisticOptimizationProblem;
 import shared.FixedIterationTrainer;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -157,7 +158,9 @@ public class CountOnesTest {
         System.out.println(csvTime);
 
         try {
-            BufferedWriter csvFitnessFile = new BufferedWriter(new FileWriter("countones_opt.csv", true));
+            File file = new File("countones_opt.csv");
+            file.createNewFile();
+            BufferedWriter csvFitnessFile = new BufferedWriter(new FileWriter(file));
             csvFitnessFile.write(csvFitness);
             csvFitnessFile.close();
         } catch (IOException ioe) {
@@ -165,12 +168,13 @@ public class CountOnesTest {
 	    }
         
         try {
-            BufferedWriter csvTimeFile = new BufferedWriter(new FileWriter("countones_time.csv", true));
+            File file = new File("countones_time.csv");
+            file.createNewFile();
+            BufferedWriter csvTimeFile = new BufferedWriter(new FileWriter(file));
             csvTimeFile.write(csvTime);
             csvTimeFile.close();
         } catch (IOException ioe) {
 	        ioe.printStackTrace();
 	    }
-        
     }
 }
