@@ -6,7 +6,7 @@ import opt.example.*;
 import opt.ga.*;
 import shared.*;
 import func.nn.backprop.*;
-
+import func.nn.activation.*;
 import java.util.*;
 import java.io.*;
 import java.text.*;
@@ -22,7 +22,7 @@ import java.text.*;
 public class AbaloneTest {
     private static Instance[] instances = initializeInstances();
 
-    private static int inputLayer = 7, hiddenLayer = 5, outputLayer = 1, trainingIterations = 1000;
+    private static int inputLayer = 14, hiddenLayer = 2, outputLayer = 1, trainingIterations = 1000;
     private static BackPropagationNetworkFactory factory = new BackPropagationNetworkFactory();
     
     private static ErrorMeasure measure = new SumOfSquaresError();
@@ -40,6 +40,7 @@ public class AbaloneTest {
 
     public static void main(String[] args) {
         for(int i = 0; i < oa.length; i++) {
+            RELU relu = new RELU();
             networks[i] = factory.createClassificationNetwork(
                 new int[] {inputLayer, hiddenLayer, outputLayer});
             nnop[i] = new NeuralNetworkOptimizationProblem(set, networks[i], measure);
@@ -106,20 +107,21 @@ public class AbaloneTest {
 
     private static Instance[] initializeInstances() {
 
-        double[][][] attributes = new double[4177][][];
+        double[][][] attributes = new double[14980][][];
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(new File("src/opt/test/abalone.txt")));
-
+            BufferedReader br = new BufferedReader(new FileReader(new File("./eeg_dataset.csv")));
+            String header = br.readLine();
+            System.out.println("Header : " + header);
             for(int i = 0; i < attributes.length; i++) {
                 Scanner scan = new Scanner(br.readLine());
                 scan.useDelimiter(",");
 
                 attributes[i] = new double[2][];
-                attributes[i][0] = new double[7]; // 7 attributes
+                attributes[i][0] = new double[14]; // 14 attributes
                 attributes[i][1] = new double[1];
 
-                for(int j = 0; j < 7; j++)
+                for(int j = 0; j < 14; j++)
                     attributes[i][0][j] = Double.parseDouble(scan.next());
 
                 attributes[i][1][0] = Double.parseDouble(scan.next());
@@ -130,11 +132,13 @@ public class AbaloneTest {
         }
 
         Instance[] instances = new Instance[attributes.length];
+        System.out.println("Instances len : " + instances.length);
 
         for(int i = 0; i < instances.length; i++) {
             instances[i] = new Instance(attributes[i][0]);
-            // classifications range from 0 to 30; split into 0 - 14 and 15 - 30
-            instances[i].setLabel(new Instance(attributes[i][1][0] < 15 ? 0 : 1));
+            // already classified as 1,0, just assign it
+            System.out.println("\tEntry : " + i + " label :" + attributes[i][1][0]);
+            instances[i].setLabel(new Instance(attributes[i][1][0]));
         }
 
         return instances;
