@@ -42,9 +42,7 @@ public class FourPeaksTest {
     public static void main(String[] args) {
         int[] ranges = new int[N];
         Arrays.fill(ranges, 2);
-		for(int i=0;i<N;i++)
-			System.out.print(" " + ranges[i]);
-        EvaluationFunction ef = new FourPeaksEvaluationFunction(T);
+		EvaluationFunction ef = new FourPeaksEvaluationFunction(T);
         Distribution odd = new DiscreteUniformDistribution(ranges);
         NeighborFunction nf = new DiscreteChangeOneNeighbor(ranges);
         MutationFunction mf = new DiscreteChangeOneMutation(ranges);
