@@ -57,4 +57,8 @@ public class MaxKColorFitnessFunction implements EvaluationFunction {
     public String foundConflict(){
     	return conflict ? "Failed to find Max-K Color combination !" : "Found Max-K Color Combination !";
     }
+
+    public int foundMax(){
+    	return conflict ? 0 : 1;
+    }
 }
