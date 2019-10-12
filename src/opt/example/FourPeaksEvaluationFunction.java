@@ -39,10 +39,10 @@ public class FourPeaksEvaluationFunction implements EvaluationFunction {
         }
         int tail = data.size() - 1 - i;
         int r = 0;
-		System.out.print("\nEval:" + head + ":" + tail + "\n");
+		//System.out.print("\nEval:" + head + ":" + tail + "\n");
         if (head > t && tail > t) {
             r = data.size();
-			System.out.print(" r=" + r);
+			//System.out.print(" r=" + r);
         }
         return Math.max(tail, head) + r;
     }
