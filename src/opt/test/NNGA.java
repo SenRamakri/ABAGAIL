@@ -67,12 +67,23 @@ public class NNGA {
 
     }
 
+    public static void init_output_file() {
+        try {
+            File file = new File("nn_ga.csv");
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
+    }
 
     public static void main(String[] args) {
 
         String final_result = "";
-
+        init_output_file();
 
         for(int i = 0; i < oa.length; i++) {
             networks[i] = factory.createClassificationNetwork(
@@ -86,11 +97,11 @@ public class NNGA {
         //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
         //oa[2] = new SimulatedAnnealing(1E11, .95, nnop[2]);
 
-        int[] iterations = {10, 100, 200, 500, 1000};
+        int[] iterations = {10, 50, 100, 200, 500};
 
         int[] population = {10, 50, 100, 200, 500};
         int[] mate = {5, 10, 25, 50, 100};
-        int[] mute = {2, 5, 10, 20, 50};
+        int[] mute = {1, 1, 1, 1, 1};//mute only one element
 
         for (int trainingIterations : iterations) {
             results = "";
@@ -128,7 +139,7 @@ public class NNGA {
                 testingTime = end - start;
                 testingTime /= Math.pow(10, 9);
 
-                results += "\nTrain Results for GA:" + "," + population[q] + "," + mate[q] + "," + mute[q] + ","  + ": \nCorrectly classified " + correct + " instances." +
+                results += "\nTrain Results for GA:" + population[q] + "," + mate[q] + "," + mute[q] + ": \nCorrectly classified " + correct + " instances." +
                         "\nIncorrectly classified " + incorrect + " instances.\nPercent correctly classified: "
                         + df.format(correct / (correct + incorrect) * 100) + "%\nTraining time: " + df.format(trainingTime)
                         + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
@@ -155,7 +166,7 @@ public class NNGA {
                 testingTime = end - start;
                 testingTime /= Math.pow(10, 9);
 
-                results += "\nTest Results for GA: " + "," + population[q] + "," + mate[q] + "," + mute[q] + ","  + ": \nCorrectly classified " + correct + " instances." +
+                results += "\nTest Results for GA: " + population[q] + "," + mate[q] + "," + mute[q] + ": \nCorrectly classified " + correct + " instances." +
                         "\nIncorrectly classified " + incorrect + " instances.\nPercent correctly classified: "
                         + df.format(correct / (correct + incorrect) * 100) + "%\nTraining time: " + df.format(trainingTime)
                         + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";

@@ -64,12 +64,23 @@ public class NNSA {
 
     }
 
+    public static void init_output_file() {
+        try {
+            File file = new File("nn_sa.csv");
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
+    }
 
     public static void main(String[] args) {
 
         String final_result = "";
-
+        init_output_file();
 
         for(int i = 0; i < oa.length; i++) {
             networks[i] = factory.createClassificationNetwork(
@@ -83,9 +94,9 @@ public class NNSA {
         //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
         //oa[2] = new SimulatedAnnealing(1E11, .95, nnop[2]);
 
-        int[] iterations = {10, 100, 200, 500, 1000};
+        int[] iterations = {10, 50, 100, 200, 500};
 
-        double[] coolings = {0.15,0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95};
+        double[] coolings = {0.10, 0.25, 0.50, 0.75, 0.95};
 
         for (int trainingIterations : iterations) {
             results = "";
