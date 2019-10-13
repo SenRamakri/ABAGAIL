@@ -60,9 +60,10 @@ public class TravelingSalesmanTest {
         GeneticAlgorithmProblem gap = new GenericGeneticAlgorithmProblem(ef, odd, mf, cf);
         String csvTime = "";
         String csvFitness = "";
-        long starttime, sumOpt, sumTime;
+        long starttime, sumTime;
+        double sumOpt = 0.0;
         int loopCount = 5, i=0, j=0;
-         int[] iterations = {50, 100, 500, 1000, 2000, 5000, 10000, 20000};
+        int[] iterations = {50, 100, 500, 1000, 2000, 5000, 10000, 20000};
         csvTime += "AlgoTime";
         csvFitness += "AlgoOptimal";
         for(i=0; i<iterations.length;i++) {
@@ -83,6 +84,7 @@ public class TravelingSalesmanTest {
                 RandomizedHillClimbing rhc = new RandomizedHillClimbing(hcp);      
                 FixedIterationTrainer fit = new FixedIterationTrainer(rhc, iterations[i]);
                 fit.train();
+                //System.out.println("RHC Optimal single: " + ef.value(rhc.getOptimal()));
                 sumOpt += ef.value(rhc.getOptimal());
                 sumTime += System.currentTimeMillis() - starttime;
             }
@@ -105,6 +107,7 @@ public class TravelingSalesmanTest {
                 SimulatedAnnealing sa = new SimulatedAnnealing(1E11, .95, hcp);
                 FixedIterationTrainer fit = new FixedIterationTrainer(sa, iterations[i]);
                 fit.train();
+                //System.out.println("SA Optimal single: " + ef.value(sa.getOptimal()));
                 sumOpt += ef.value(sa.getOptimal());
                 sumTime += System.currentTimeMillis() - starttime;
             }
@@ -128,6 +131,7 @@ public class TravelingSalesmanTest {
                 FixedIterationTrainer fit = new FixedIterationTrainer(ga, iterations[i]);
                 fit.train();
                 sumOpt += ef.value(ga.getOptimal());
+                //System.out.println("GA Optimal single: " + ef.value(ga.getOptimal()));
                 sumTime += System.currentTimeMillis() - starttime;
             }
             System.out.println("GA Optimal : " + (float)sumOpt / loopCount);
@@ -158,6 +162,7 @@ public class TravelingSalesmanTest {
                 FixedIterationTrainer fit = new FixedIterationTrainer(mimic, iterations[i]);
                 fit.train();
                 sumOpt += ef.value(mimic.getOptimal());
+                //System.out.println("MIMIC Optimal single: " + ef.value(mimic.getOptimal()));
                 sumTime += System.currentTimeMillis() - starttime;
             }
             System.out.println("MIMIC Optimal : " + (float)sumOpt / loopCount);
