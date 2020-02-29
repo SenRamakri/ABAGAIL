@@ -28,7 +28,7 @@ import java.util.Scanner;
 
 public class NNGA {
     private static Instance[] instances = initializeInstances();
-    private static int inputLayer = 14, hiddenLayer = 2, outputLayer = 1;
+    private static int inputLayer = 14, hiddenLayer = 10, outputLayer = 1;
     private static Instance[] train_set = Arrays.copyOfRange(instances, 0, 11984);
     private static Instance[] test_set = Arrays.copyOfRange(instances, 11984, 14980);
 

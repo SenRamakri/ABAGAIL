@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.Scanner;
 public class NNSA {
     private static Instance[] instances = initializeInstances();
-    private static int inputLayer = 14, hiddenLayer = 2, outputLayer = 1;
+    private static int inputLayer = 14, hiddenLayer = 10, outputLayer = 1;
     private static Instance[] train_set = Arrays.copyOfRange(instances, 0, 11984);
     private static Instance[] test_set = Arrays.copyOfRange(instances, 11984, 14980);
 
@@ -94,7 +94,7 @@ public class NNSA {
         //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
         //oa[2] = new SimulatedAnnealing(1E11, .95, nnop[2]);
 
-        int[] iterations = {10, 50, 100, 200, 500};
+        int[] iterations = {10, 50, 100, 200, 500, 1000, 2000};
 
         double[] coolings = {0.10, 0.25, 0.50, 0.75, 0.95};
 
