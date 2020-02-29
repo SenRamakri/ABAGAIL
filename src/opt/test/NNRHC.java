@@ -9,6 +9,14 @@ import opt.RandomizedHillClimbing;
 import opt.SimulatedAnnealing;
 import opt.example.NeuralNetworkOptimizationProblem;
 import opt.ga.StandardGeneticAlgorithm;
+import func.nn.feedfwd.FeedForwardNetwork;
+import func.nn.feedfwd.FeedForwardNeuralNetworkFactory;
+import shared.FixedIterationTrainer;
+import shared.tester.AccuracyTestMetric;
+import shared.tester.CrossValidationTestMetric;
+import shared.tester.NeuralNetworkTester;
+import shared.tester.TestMetric;
+import shared.tester.Tester;
 import shared.*;
 import func.nn.activation.*;
 
@@ -26,18 +34,15 @@ public class NNRHC {
     private static int inputLayer = 14, hiddenLayer = 10, outputLayer = 1;
     private static Instance[] train_set = Arrays.copyOfRange(instances, 0, 11984);
     private static Instance[] test_set = Arrays.copyOfRange(instances, 11984, 14980);
-
-    private static DataSet set = new DataSet(train_set);
-
-    private static BackPropagationNetworkFactory factory = new BackPropagationNetworkFactory();
+    private static FeedForwardNeuralNetworkFactory factory = new FeedForwardNeuralNetworkFactory();
 
     private static ErrorMeasure measure = new SumOfSquaresError();
 
-    private static BackPropagationNetwork networks[] = new BackPropagationNetwork[1];
-    private static NeuralNetworkOptimizationProblem[] nnop = new NeuralNetworkOptimizationProblem[1];
+    private static FeedForwardNetwork networks;
+    private static NeuralNetworkOptimizationProblem nnop;
 
-    private static OptimizationAlgorithm[] oa = new OptimizationAlgorithm[1];
-    private static String[] oaNames = {"RHC"};
+    private static OptimizationAlgorithm oa;
+    private static String oaNames = "RHC";
     private static String results = "";
 
     private static DecimalFormat df = new DecimalFormat("0.000");
@@ -78,118 +83,79 @@ public class NNRHC {
 
         String final_result = "";
         init_output_file();
+
+        //make CV folds
+        int foldsize = 5;
+        int foldsetsize = train_set.length / foldsize;
+        int cvsetsize = train_set.length - foldsetsize;
+
+        for(int f=0 ; f<5; f++ ) {
+            int foldstart = f * foldsetsize;
+            int foldend = (f+1) * foldsetsize;
+            Instance[] cv_train_set_1 = Arrays.copyOfRange(instances, 0, foldstart);
+            Instance[] cv_train_set_2 = Arrays.copyOfRange(instances, foldend, train_set.length - 1);
+            Instance[] cv_train_set = new Instance[cv_train_set_1.length + cv_train_set_2.length];
+            System.arraycopy(cv_train_set_1, 0, cv_train_set, 0, cv_train_set_1.length);
+            System.arraycopy(cv_train_set_2, 0, cv_train_set, cv_train_set_1.length, cv_train_set_2.length);
+            DataSet set = new DataSet(cv_train_set);
+            System.out.println("Start: " + foldstart + " end: " + foldend + " foldsetsize: " + foldsetsize + " cvtrainsetsize: " + cv_train_set.length);
         
-        for(int i = 0; i < oa.length; i++) {
             RELU relu = new RELU();
-            networks[i] = factory.createClassificationNetwork(
+            networks = factory.createClassificationNetwork(
                     new int[] {inputLayer, hiddenLayer, outputLayer}, relu);
-            nnop[i] = new NeuralNetworkOptimizationProblem(set, networks[i], measure);
-        }
-
-        oa[0] = new RandomizedHillClimbing(nnop[0]);
-        //oa[0] = new SimulatedAnnealing(1E11, .95, nnop[0]);
-        //oa[1] = new SimulatedAnnealing(1E11, .95, nnop[1]);
-        //oa[2] = new StandardGeneticAlgorithm(200, 100, 10, nnop[2]);
-        //oa[2] = new SimulatedAnnealing(1E11, .95, nnop[2]);
-
-        int[] iterations = {10, 50, 100, 200, 500, 1000, 2000};
-
-        for (int trainingIterations : iterations) {
+            nnop = new NeuralNetworkOptimizationProblem(set, networks, measure);
+        
+            oa = new RandomizedHillClimbing(nnop);
             results = "";
-            for (int i = 0; i < oa.length; i++) {
-                double start = System.nanoTime(), end, trainingTime, testingTime, correct = 0, incorrect = 0;
-                train(oa[i], networks[i], oaNames[i], trainingIterations); //trainer.train();
-                end = System.nanoTime();
-                trainingTime = end - start;
-                trainingTime /= Math.pow(10, 9);
+            
+            double start = System.nanoTime(), end, trainingTime, testingTime, correct = 0, incorrect = 0;
+            // 7) Instantiate a trainer.  The FixtIterationTrainer takes another trainer (in this case,
+            //    an OptimizationAlgorithm) and executes it a specified number of times.
+            FixedIterationTrainer fit = new FixedIterationTrainer(oa, 5000);
+            
+            // 8) Run the trainer.  This may take a little while to run, depending on the OptimizationAlgorithm,
+            //    size of the data, and number of iterations.
+            fit.train();
+            end = System.nanoTime();
+            trainingTime = end - start;
+            trainingTime /= Math.pow(10, 9);
 
-                Instance optimalInstance = oa[i].getOptimal();
-                networks[i].setWeights(optimalInstance.getData());
+            Instance optimalInstance = oa.getOptimal();
+            networks.setWeights(optimalInstance.getData());
+            //System.out.println("optimalInstance.getData(): " + optimalInstance.getData());
 
-                // Calculate Training Set Statistics //
-                double predicted, actual;
-                start = System.nanoTime();
-                for (int j = 0; j < train_set.length; j++) {
-                    networks[i].setInputValues(train_set[j].getData());
-                    networks[i].run();
+            // Calculate Training Set Statistics //
+            double predicted, actual;
+            
+            // Calculate Test Set Statistics //
+            start = System.nanoTime();
+            correct = 0;
+            incorrect = 0;
+            for (int j = 0; j < test_set.length; j++) {
+                networks.setInputValues(test_set[j].getData());
+                networks.run();
 
-                    //predicted = Double.parseDouble(train_set[j].getLabel().toString());
-                    //actual = Double.parseDouble(networks[i].getOutputValues().toString());
+                actual = Double.parseDouble(test_set[j].getLabel().toString());
+                predicted = Double.parseDouble(networks.getOutputValues().toString());
 
-                    actual = Double.parseDouble(train_set[j].getLabel().toString());
-                    predicted = Double.parseDouble(networks[i].getOutputValues().toString());
+                System.out.println("vals: " + actual + ":" + predicted + ":" + Math.round(predicted));
 
-                    //System.out.println("actual is " + actual);
-                    //System.out.println("predicted is " + predicted);
-
-                    double trash = Math.abs(predicted - actual) < 0.5 ? correct++ : incorrect++;
-
-                }
-                end = System.nanoTime();
-                testingTime = end - start;
-                testingTime /= Math.pow(10, 9);
-
-                results += "\nTrain Results for " + oaNames[i] + ": \nCorrectly classified " + correct + " instances." +
-                        "\nIncorrectly classified " + incorrect + " instances.\nPercent correctly classified: "
-                        + df.format(correct / (correct + incorrect) * 100) + "%\nTraining time: " + df.format(trainingTime)
-                        + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
-
-                final_result = oaNames[i] + "," + trainingIterations + "," + "training accuracy" + "," + df.format(correct / (correct + incorrect) * 100)
-                        + "," + "training time" + "," + df.format(trainingTime) + "," + "testing time" +
-                        "," + df.format(testingTime);
-                write_output_to_file("nn_rhc.csv", final_result);
-
-                // Calculate Test Set Statistics //
-                start = System.nanoTime();
-                correct = 0;
-                incorrect = 0;
-                for (int j = 0; j < test_set.length; j++) {
-                    networks[i].setInputValues(test_set[j].getData());
-                    networks[i].run();
-
-                    actual = Double.parseDouble(test_set[j].getLabel().toString());
-                    predicted = Double.parseDouble(networks[i].getOutputValues().toString());
-
-                    double trash = Math.abs(predicted - actual) < 0.5 ? correct++ : incorrect++;
-                }
-                end = System.nanoTime();
-                testingTime = end - start;
-                testingTime /= Math.pow(10, 9);
-
-                results += "\nTest Results for " + oaNames[i] + ": \nCorrectly classified " + correct + " instances." +
-                        "\nIncorrectly classified " + incorrect + " instances.\nPercent correctly classified: "
-                        + df.format(correct / (correct + incorrect) * 100) + "%\nTraining time: " + df.format(trainingTime)
-                        + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
-
-                final_result = oaNames[i] + "," + trainingIterations + "," + "testing accuracy" + "," + df.format(correct / (correct + incorrect) * 100)
-                        + "," + "training time" + "," + df.format(trainingTime) + "," + "testing time" +
-                        "," + df.format(testingTime);
-                write_output_to_file("nn_rhc.csv", final_result);
+                double trash = (Math.round(predicted) == actual) ? correct++ : incorrect++;
             }
-            System.out.println("results for iteration: " + trainingIterations + "---------------------------");
+            end = System.nanoTime();
+            testingTime = end - start;
+            testingTime /= Math.pow(10, 9);
+
+            results += "\nTest Results for " + oaNames + ": \nCorrectly classified " + correct + " instances." +
+                    "\nIncorrectly classified " + incorrect + " instances.\nPercent correctly classified: "
+                    + df.format(correct / (correct + incorrect) * 100) + "%\nTraining/Optimization time: " + df.format(trainingTime)
+                    + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
+            final_result += (oaNames + "," + "testing accuracy" + "," + df.format(correct / (correct + incorrect) * 100)
+                            + "," + "training/optimization time" + "," + df.format(trainingTime) + "," + "testing time" +
+                            "," + df.format(testingTime)) + "\n";
             System.out.println(results);
         }
-    }
-
-    private static void train(OptimizationAlgorithm oa, BackPropagationNetwork network, String oaName, int iteration) {
-        //System.out.println("\nError results for " + oaName + "\n---------------------------");
-        int trainingIterations = iteration;
-        for(int i = 0; i < trainingIterations; i++) {
-            oa.train();
-
-            double train_error = 0;
-            for(int j = 0; j < train_set.length; j++) {
-                network.setInputValues(train_set[j].getData());
-                network.run();
-
-                Instance output = train_set[j].getLabel(), example = new Instance(network.getOutputValues());
-                example.setLabel(new Instance(Double.parseDouble(network.getOutputValues().toString())));
-                train_error += measure.value(output, example);
-            }
-
-
-            //System.out.println("training error :" + df.format(train_error)+", testing error: "+df.format(test_error));
-        }
+        write_output_to_file("nn_rhc.csv", final_result);
     }
 
     private static Instance[] initializeInstances() {

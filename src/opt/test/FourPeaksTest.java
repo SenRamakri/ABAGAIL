@@ -56,7 +56,7 @@ public class FourPeaksTest {
         String csvFitness = "";
         long starttime, sumOpt, sumTime;
         int loopCount = 5, i=0, j=0;
-        int[] iterations = {50, 100, 500, 1000, 2000, 5000, 10000, 20000};
+        int[] iterations = {50, 100, 500, 1000, 2000, 5000, 10000};
         csvTime += "AlgoTime";
         csvFitness += "AlgoOptimal";
         for(i=0; i<iterations.length;i++) {
@@ -72,18 +72,17 @@ public class FourPeaksTest {
         for(i=0; i<iterations.length;i++) {
             sumOpt = 0;
             sumTime = 0;
-            for(j=0; j<loopCount; j++) {
-                starttime = System.currentTimeMillis();
-                RandomizedHillClimbing rhc = new RandomizedHillClimbing(hcp);      
-                FixedIterationTrainer fit = new FixedIterationTrainer(rhc, iterations[i]);
-                fit.train();
-                sumOpt += ef.value(rhc.getOptimal());
-                sumTime += System.currentTimeMillis() - starttime;
-            }
-            System.out.println("RHC Optimal : " + sumOpt / loopCount);
-            System.out.println("Time : " + sumTime / loopCount);
-            csvFitness += ("," + (sumOpt / loopCount));
-            csvTime += ("," + (sumTime / loopCount)); 
+            starttime = System.currentTimeMillis();
+            RandomizedHillClimbing rhc = new RandomizedHillClimbing(hcp);      
+            FixedIterationTrainer fit = new FixedIterationTrainer(rhc, iterations[i]);
+            fit.train();
+            //System.out.println("RHC Optimal single: " + ef.value(rhc.getOptimal()));
+            sumOpt += ef.value(rhc.getOptimal());
+            sumTime += System.currentTimeMillis() - starttime;
+            System.out.println("RHC Optimal : " + (float)sumOpt);
+            System.out.println("Time : " + sumTime);
+            csvFitness += ("," + ((float)sumOpt));
+            csvTime += ("," + (sumTime)); 
         }
         csvFitness += "\n";
         csvTime += "\n";
@@ -91,21 +90,25 @@ public class FourPeaksTest {
 
         csvTime += "SA";
         csvFitness += "SA";
+        double coolings[] = { 0.2, 0.4, 0.6, 0.8, 0.9 };
         for(i=0; i<iterations.length;i++) {
             sumOpt = 0;
             sumTime = 0;
-            for(j=0; j<loopCount; j++) {
+            for(j=0; j<coolings.length; j++) {
                 starttime = System.currentTimeMillis();
-                SimulatedAnnealing sa = new SimulatedAnnealing(1E11, .95, hcp);
+                SimulatedAnnealing sa = new SimulatedAnnealing(1E11, coolings[j], hcp);
                 FixedIterationTrainer fit = new FixedIterationTrainer(sa, iterations[i]);
                 fit.train();
+                //System.out.println("SA Optimal single: " + ef.value(sa.getOptimal()));
+                csvTime += ("," + ((float)coolings[j]));
+                csvFitness += ("," + ((float)coolings[j]));
                 sumOpt += ef.value(sa.getOptimal());
                 sumTime += System.currentTimeMillis() - starttime;
+                System.out.println("SA Optimal : " + (float)sumOpt);
+                System.out.println("Time : " + sumTime);
+                csvFitness += ("," + ((float)sumOpt));
+                csvTime += ("," + (sumTime)); 
             }
-            System.out.println("SA Optimal : " + sumOpt / loopCount);
-            System.out.println("Time : " + sumTime / loopCount);
-            csvFitness += ("," + (sumOpt / loopCount));
-            csvTime += ("," + (sumTime / loopCount)); 
         }
         csvFitness += "\n";
         csvTime += "\n";
@@ -113,43 +116,58 @@ public class FourPeaksTest {
 
         csvTime += "GA";
         csvFitness += "GA";
+        int[] mate = {25, 50, 100, 150, 200};
+        int[] mute = {1, 2, 3, 4, 5};
         for(i=0; i<iterations.length;i++) {
             sumOpt = 0;
             sumTime = 0;
-            for(j=0; j<loopCount; j++) {
-                starttime = System.currentTimeMillis();
-                StandardGeneticAlgorithm ga = new StandardGeneticAlgorithm(200, 100, 10, gap);     
-                FixedIterationTrainer fit = new FixedIterationTrainer(ga, iterations[i]);
-                fit.train();
-                sumOpt += ef.value(ga.getOptimal());
-                sumTime += System.currentTimeMillis() - starttime;
+            for(int mates=0; mates<mate.length; mates++) {
+                for(int mutes=0; mutes<mute.length; mutes++) {
+                    starttime = System.currentTimeMillis();
+                    StandardGeneticAlgorithm ga = new StandardGeneticAlgorithm(200, mate[mates], mute[mutes], gap);   
+                    FixedIterationTrainer fit = new FixedIterationTrainer(ga, iterations[i]);
+                    fit.train();
+                    sumOpt += ef.value(ga.getOptimal());
+                    sumTime += System.currentTimeMillis() - starttime;
+                    csvTime += ("," + mate[mates] + "," + mute[mutes]);
+                    csvFitness += ("," + mate[mates] + "," + mute[mutes]);
+                    System.out.println("GA Optimal : " + (float)sumOpt);
+                    System.out.println("Time : " + sumTime);
+                    csvFitness += ("," + ((float)sumOpt));
+                    csvTime += ("," + (sumTime));
+                } 
             }
-            System.out.println("GA Optimal : " + sumOpt / loopCount);
-            System.out.println("Time : " + sumTime / loopCount);
-            csvFitness += ("," + (sumOpt / loopCount));
-            csvTime += ("," + (sumTime / loopCount)); 
         }
         csvFitness += "\n";
         csvTime += "\n";
+        
         /////////////////////////////////////////////////////////////////////////
 
+        int[] samples = {100, 150, 200, 250, 300};
+        int[] tokeep = {20, 30, 40, 50, 60};
         csvTime += "MIMIC";
         csvFitness += "MIMIC";
         for(i=0; i<iterations.length;i++) {
             sumOpt = 0;
             sumTime = 0;
-            for(j=0; j<loopCount; j++) {
-                starttime = System.currentTimeMillis();
-                MIMIC mimic = new MIMIC(200, 20, pop);    
-                FixedIterationTrainer fit = new FixedIterationTrainer(mimic, iterations[i]);
-                fit.train();
-                sumOpt += ef.value(mimic.getOptimal());
-                sumTime += System.currentTimeMillis() - starttime;
+            for(int samps=0; samps<samples.length; samps++) {
+                for(int tokeeps=0; tokeeps<tokeep.length; tokeeps++) {
+                    starttime = System.currentTimeMillis();
+                    // for mimic we use a sort encoding
+                    MIMIC mimic = new MIMIC(samples[samps], tokeep[tokeeps], pop);
+                    //MIMIC mimic = new MIMIC(100, 50, pop);
+                    FixedIterationTrainer fit = new FixedIterationTrainer(mimic, iterations[i]);
+                    fit.train();
+                    sumOpt += ef.value(mimic.getOptimal());
+                    sumTime += System.currentTimeMillis() - starttime;
+                    csvTime += ("," + samples[samps] + "," + tokeep[tokeeps]);
+                    csvFitness += ("," + samples[samps] + "," + tokeep[tokeeps]);
+                    System.out.println("MIMIC Optimal : " + (float)sumOpt);
+                    System.out.println("Time : " + sumTime);
+                    csvFitness += ("," + ((float)sumOpt));
+                    csvTime += ("," + (sumTime));
+                }
             }
-            System.out.println("MIMIC Optimal : " + sumOpt / loopCount);
-            System.out.println("Time : " + sumTime / loopCount);
-            csvFitness += ("," + (sumOpt / loopCount));
-            csvTime += ("," + (sumTime / loopCount)); 
         }
         csvFitness += "\n";
         csvTime += "\n";
