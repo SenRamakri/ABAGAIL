@@ -81,7 +81,8 @@ public class NNGA {
 
     public static void main(String[] args) {
 
-        String final_result = "";
+        String final_result = oaNames + "\n";
+        final_result += "iters,f,mate,accuracy,optimtime,testtime\n";
         init_output_file();
         //make CV folds
         int foldsize = 5;
@@ -89,6 +90,7 @@ public class NNGA {
         int cvsetsize = train_set.length - foldsetsize;
 
         int[] mate = {5, 10, 25, 50, 100};
+        int[] iterations = {50, 100, 200, 500, 1000, 2000};
         
         for(int f=0 ; f<5; f++ ) {
             int foldstart = f * foldsetsize;
@@ -113,49 +115,47 @@ public class NNGA {
                 double start = System.nanoTime(), end, trainingTime, testingTime, correct = 0, incorrect = 0;
                 // 7) Instantiate a trainer.  The FixtIterationTrainer takes another trainer (in this case,
                 //    an OptimizationAlgorithm) and executes it a specified number of times.
-                FixedIterationTrainer fit = new FixedIterationTrainer(oa, 5000);
-                
-                // 8) Run the trainer.  This may take a little while to run, depending on the OptimizationAlgorithm,
-                //    size of the data, and number of iterations.
-                fit.train();
-                end = System.nanoTime();
-                trainingTime = end - start;
-                trainingTime /= Math.pow(10, 9);
 
-                Instance optimalInstance = oa.getOptimal();
-                networks.setWeights(optimalInstance.getData());
-                //System.out.println("optimalInstance.getData(): " + optimalInstance.getData());
+                for(int iter=0; iter<iterations.length; iter++) {
+                    FixedIterationTrainer fit = new FixedIterationTrainer(oa, iterations[iter]);
+                    
+                    // 8) Run the trainer.  This may take a little while to run, depending on the OptimizationAlgorithm,
+                    //    size of the data, and number of iterations.
+                    fit.train();
+                    end = System.nanoTime();
+                    trainingTime = end - start;
+                    trainingTime /= Math.pow(10, 9);
 
-                // Calculate Training Set Statistics //
-                double predicted, actual;
-                
-                // Calculate Test Set Statistics //
-                start = System.nanoTime();
-                correct = 0;
-                incorrect = 0;
-                for (int j = 0; j < test_set.length; j++) {
-                    networks.setInputValues(test_set[j].getData());
-                    networks.run();
+                    Instance optimalInstance = oa.getOptimal();
+                    networks.setWeights(optimalInstance.getData());
+                    //System.out.println("optimalInstance.getData(): " + optimalInstance.getData());
 
-                    actual = Double.parseDouble(test_set[j].getLabel().toString());
-                    predicted = Double.parseDouble(networks.getOutputValues().toString());
+                    // Calculate Training Set Statistics //
+                    double predicted, actual;
+                    
+                    // Calculate Test Set Statistics //
+                    start = System.nanoTime();
+                    correct = 0;
+                    incorrect = 0;
+                    for (int j = 0; j < test_set.length; j++) {
+                        networks.setInputValues(test_set[j].getData());
+                        networks.run();
 
-                    System.out.println("vals: " + actual + ":" + predicted + ":" + Math.round(predicted));
+                        actual = Double.parseDouble(test_set[j].getLabel().toString());
+                        predicted = Double.parseDouble(networks.getOutputValues().toString());
 
-                    double trash = (Math.round(predicted) == actual) ? correct++ : incorrect++;
+                        //System.out.println("vals: " + actual + ":" + predicted + ":" + Math.round(predicted));
+
+                        double trash = (Math.round(predicted) == actual) ? correct++ : incorrect++;
+                    }
+                    end = System.nanoTime();
+                    testingTime = end - start;
+                    testingTime /= Math.pow(10, 9);
+
+                    final_result += (iterations[iter] + "," + f + "," + mate[q] + "," + df.format(correct / (correct + incorrect) * 100)
+                                + "," + df.format(trainingTime) + "," + df.format(testingTime)) + "\n";
+                    System.out.println(final_result);
                 }
-                end = System.nanoTime();
-                testingTime = end - start;
-                testingTime /= Math.pow(10, 9);
-
-                results += "\nTest Results for " + oaNames + ": \nCorrectly classified " + correct + " instances." +
-                        "\nIncorrectly classified " + incorrect + " instances.\nPercent correctly classified: "
-                        + df.format(correct / (correct + incorrect) * 100) + "%\nTraining/Optimization time: " + df.format(trainingTime)
-                        + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
-                final_result += (oaNames + "," + "mate" + "," + mate[q] + "," + "testing accuracy" + "," + df.format(correct / (correct + incorrect) * 100)
-                                + "," + "training/optimization time" + "," + df.format(trainingTime) + "," + "testing time" +
-                                "," + df.format(testingTime)) + "\n";
-                System.out.println(results);
             }
         }
         write_output_to_file("nn_ga.csv", final_result);
