@@ -53,10 +53,11 @@ public class CountOnesTest {
         ProbabilisticOptimizationProblem pop = new GenericProbabilisticOptimizationProblem(ef, odd, df);
         String csvTime = "";
         String csvFitness = "";
-        long starttime, sumOpt, sumTime;
-        int loopCount = 5, i=0, j=0;
+        long starttime, sumTime;
+        double sumOpt;
+        //int loopCount = 5, i=0, j=0;
         int[] iterations = {50, 100, 500, 1000, 2000, 5000};
-        //int[] iterations = {50, 100, 500};
+        int[] iterations = {50, 100};
                 
         //////////////////////////////////////////////////////////////////////
         csvTime += "RHC\n";
@@ -71,8 +72,8 @@ public class CountOnesTest {
             FixedIterationTrainer fit = new FixedIterationTrainer(rhc, iterations[i]);
             fit.train();
             //System.out.println("RHC Optimal single: " + ef.value(rhc.getOptimal()));
-            sumOpt += ef.value(rhc.getOptimal());
-            sumTime += System.currentTimeMillis() - starttime;
+            sumOpt = ef.value(rhc.getOptimal());
+            sumTime = System.currentTimeMillis() - starttime;
             System.out.println("RHC Optimal : " + (float)sumOpt);
             System.out.println("Time : " + sumTime);
             csvFitness += (iterations[i] + "," + ((float)sumOpt)) + "\n";
@@ -98,8 +99,8 @@ public class CountOnesTest {
                 //System.out.println("SA Optimal single: " + ef.value(sa.getOptimal()));
                 csvTime += (iterations[i] + "," + ((float)coolings[j]));
                 csvFitness += (iterations[i] + "," + ((float)coolings[j]));
-                sumOpt += ef.value(sa.getOptimal());
-                sumTime += System.currentTimeMillis() - starttime;
+                sumOpt = ef.value(sa.getOptimal());
+                sumTime = System.currentTimeMillis() - starttime;
                 System.out.println("SA Optimal : " + (float)sumOpt);
                 System.out.println("Time : " + sumTime);
                 csvFitness += ("," + ((float)sumOpt)) + "\n";
@@ -125,8 +126,8 @@ public class CountOnesTest {
                     StandardGeneticAlgorithm ga = new StandardGeneticAlgorithm(200, mate[mates], mute[mutes], gap);   
                     FixedIterationTrainer fit = new FixedIterationTrainer(ga, iterations[i]);
                     fit.train();
-                    sumOpt += ef.value(ga.getOptimal());
-                    sumTime += System.currentTimeMillis() - starttime;
+                    sumOpt = ef.value(ga.getOptimal());
+                    sumTime = System.currentTimeMillis() - starttime;
                     csvTime += (iterations[i] + "," + mate[mates]);
                     csvFitness += (iterations[i] + "," + mate[mates]);
                     System.out.println("GA Optimal : " + (float)sumOpt);
@@ -157,8 +158,8 @@ public class CountOnesTest {
                     //MIMIC mimic = new MIMIC(100, 50, pop);
                     FixedIterationTrainer fit = new FixedIterationTrainer(mimic, iterations[i]);
                     fit.train();
-                    sumOpt += ef.value(mimic.getOptimal());
-                    sumTime += System.currentTimeMillis() - starttime;
+                    sumOpt = ef.value(mimic.getOptimal());
+                    sumTime = System.currentTimeMillis() - starttime;
                     csvTime += (iterations[i] + "," + samples[samps]);
                     csvFitness += (iterations[i] + "," + samples[samps]);
                     System.out.println("MIMIC Optimal : " + (float)sumOpt);
