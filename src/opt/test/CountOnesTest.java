@@ -55,9 +55,9 @@ public class CountOnesTest {
         String csvFitness = "";
         long starttime, sumTime;
         double sumOpt;
-        //int loopCount = 5, i=0, j=0;
+        int loopCount = 5, i=0, j=0;
         int[] iterations = {50, 100, 500, 1000, 2000, 5000};
-        int[] iterations = {50, 100};
+        //int[] iterations = {50, 100};
                 
         //////////////////////////////////////////////////////////////////////
         csvTime += "RHC\n";
