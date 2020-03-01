@@ -88,10 +88,8 @@ public class NNGA {
         int foldsetsize = train_set.length / foldsize;
         int cvsetsize = train_set.length - foldsetsize;
 
-        int[] population = {10, 50, 100, 200, 500};
         int[] mate = {5, 10, 25, 50, 100};
-        int[] mute = {1, 1, 1, 1, 1};//mute only one element
-
+        
         for(int f=0 ; f<5; f++ ) {
             int foldstart = f * foldsetsize;
             int foldend = (f+1) * foldsetsize;
@@ -109,7 +107,7 @@ public class NNGA {
             nnop = new NeuralNetworkOptimizationProblem(set, networks, measure);
 
             for(int q=0; q<5; q++) {
-                oa = new StandardGeneticAlgorithm(population[q], mate[q], mute[q], nnop);
+                oa = new StandardGeneticAlgorithm(200, mate[q], 1, nnop);
                 results = "";
                 
                 double start = System.nanoTime(), end, trainingTime, testingTime, correct = 0, incorrect = 0;
@@ -154,7 +152,7 @@ public class NNGA {
                         "\nIncorrectly classified " + incorrect + " instances.\nPercent correctly classified: "
                         + df.format(correct / (correct + incorrect) * 100) + "%\nTraining/Optimization time: " + df.format(trainingTime)
                         + " seconds\nTesting time: " + df.format(testingTime) + " seconds\n";
-                final_result += (oaNames + "," + "population" + "," + population + "," + "testing accuracy" + "," + df.format(correct / (correct + incorrect) * 100)
+                final_result += (oaNames + "," + "mate" + "," + mate[q] + "," + "testing accuracy" + "," + df.format(correct / (correct + incorrect) * 100)
                                 + "," + "training/optimization time" + "," + df.format(trainingTime) + "," + "testing time" +
                                 "," + df.format(testingTime)) + "\n";
                 System.out.println(results);

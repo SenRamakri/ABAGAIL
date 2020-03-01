@@ -63,7 +63,7 @@ public class TravelingSalesmanTest {
         long starttime, sumTime;
         double sumOpt = 0.0;
         int loopCount = 5, i=0, j=0;
-        int[] iterations = {50, 100, 500, 1000, 2000, 5000};
+        int[] iterations = {50, 100, 500, 1000, 2000, 5000, 10000, 20000};
         //int[] iterations = {50, 100};
         //////////////////////////////////////////////////////////////////////
         csvTime += "RHC\n";

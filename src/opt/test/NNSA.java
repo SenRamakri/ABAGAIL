@@ -87,7 +87,6 @@ public class NNSA {
         int foldsetsize = train_set.length / foldsize;
         int cvsetsize = train_set.length - foldsetsize;
 
-        int[] iterations = {10, 50, 100, 200};
         double[] coolings = {0.10, 0.25, 0.50, 0.75, 0.95};
 
         for(int f=0 ; f<5; f++ ) {
